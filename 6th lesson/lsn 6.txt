@@ -1,0 +1,37 @@
+2.  SELECT
+	target_id,
+	(SELECT CONCAT(first_name, ' ', last_name) FROM users WHERE id = likes.target_id) AS name,
+	(SELECT CONCAT(birthday) FROM profiles WHERE user_id = likes.target_id) AS birthday,
+	COUNT(*) AS likes
+FROM likes
+WHERE target_type_id = '2'
+GROUP BY target_id
+ORDER BY birthday DESC
+LIMIT 10;
+
+
+3. SELECT
+	(SELECT gender FROM profiles WHERE user_id = likes.user_id) AS gender,
+	COUNT(*) AS count
+FROM likes
+GROUP BY gender;
+
+4. SELECT user_id,(SELECT CONCAT(first_name, ' ', last_name) FROM users WHERE id = activities.user_id) AS name, SUM(count) as activity FROM
+	(SELECT user_id, COUNT(*) AS count
+		FROM likes
+		GROUP BY user_id
+	UNION ALL
+	SELECT from_user_id, Count(*) AS count
+		FROM messages
+		GROUP BY from_user_id
+	UNION ALL
+	SELECT user_id, Count(*) AS count
+		FROM communities_users
+		GROUP BY user_id
+	UNION ALL
+	SELECT user_id, Count(*) AS count
+		FROM media
+		GROUP BY user_id) AS activities
+GROUP BY user_id
+ORDER BY activity
+LIMIT 10;
