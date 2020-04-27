@@ -1,0 +1,82 @@
+1.
+CREATE TABLE logs(
+created_at DATETIME NOT NULL,
+table_name VARCHAR(50) NOT NULL,
+id INT(20) NOT NULL,
+name VARCHAR(50) NOT NULL) ENGINE = ARCHIVE;
+
+DELIMITER //
+
+DROP TRIGGER IF EXISTS creating_logs_users//
+CREATE TRIGGER creating_logs_users AFTER INSERT ON users
+FOR EACH ROW
+BEGIN 
+	INSERT INTO logs
+	VALUES (NOW(), 'users', NEW.id, NEW.name);
+END//
+
+DROP TRIGGER IF EXISTS creating_logs_products//
+CREATE TRIGGER creating_logs_products AFTER INSERT ON products
+FOR EACH ROW
+BEGIN 
+	INSERT INTO logs
+	VALUES (NOW(), 'products', NEW.id, NEW.name);
+END//
+
+DROP TRIGGER IF EXISTS creating_logs_catalogs//
+CREATE TRIGGER creating_logs_catalogs AFTER INSERT ON catalogs
+FOR EACH ROW
+BEGIN 
+	INSERT INTO logs
+	VALUES (NOW(), 'catalogs', NEW.id, NEW.name);
+END//
+
+
+1.
+// Пользоваться таким синтаксисом. Далее скопировал вывод терминала:
+127.0.0.1:6379> hincrby ip 192.168.0.1 1
+(integer) 1
+127.0.0.1:6379> hincrby ip 192.168.0.2 1
+(integer) 1
+127.0.0.1:6379> hincrby ip 192.168.0.3 1
+(integer) 1
+127.0.0.1:6379> hincrby ip 192.168.0.1 1
+(integer) 2
+127.0.0.1:6379> hincrby ip 192.168.0.1 1
+(integer) 3
+127.0.0.1:6379> hincrby ip 192.168.0.1 1
+(integer) 4
+127.0.0.1:6379> hincrby ip 192.168.0.1 1
+(integer) 5
+127.0.0.1:6379> hincrby ip 192.168.0.2 1
+(integer) 2
+127.0.0.1:6379> hincrby ip 192.168.0.2 1
+(integer) 3
+127.0.0.1:6379> hincrby ip 192.168.0.4 1
+(integer) 1
+127.0.0.1:6379> hgetall ip
+1) "192.168.0.1"
+2) "5"
+3) "192.168.0.2"
+4) "3"
+5) "192.168.0.3"
+6) "1"
+7) "192.168.0.4"
+8) "1"
+// Таким образом имеем 5,3,1,1 посещений у соответсвующих выводу ip.
+
+2.// На ум быстро приходит создание пары ключ-значение в виде двух пар. email - имя; имя - email.
+// Вывод терминала:
+127.0.0.1:6379> set kindly@gmail.com kindly
+OK
+127.0.0.1:6379> set kindly kindly@gmail.com
+OK
+127.0.0.1:6379> GET kindly@gmail.com
+"kindly"
+127.0.0.1:6379> GET kindly
+"kindly@gmail.com"
+
+3.use catalogs
+db.catalogs.insertMany([{"name": "Материнские платы"}, {"name": "Процессоры"},{"name":"Видеокарты"}, {"name": "ОЗУ"}])
+use products
+db.products.insertMany([{"name":"Intel Core i3-8100", "description":"Процессор для настольных персональных компьютеров, основанных на платформе Intel.","price":"7890","catalog_name":"Процессоры"},[{"name":"ASUS ROG MAXIMUS X HERO", "description":"Материнская плата ASUS ROG MAXIMUS X HERO, Z370, Socket 1151-V2, DDR4, ATX.","price":"19310","catalog_name":"Материнские платы"}])
