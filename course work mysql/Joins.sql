@@ -18,14 +18,14 @@ SELECT (CASE t.target_type_id
 		END) AS name,
 		subscriptions_target_types.name AS `type`
 FROM subscriptions_target_types
-	LEFT JOIN (SELECT target_type_id, target_id FROM subscriptions WHERE account_id = 121) AS t
-	ON subscriptions_target_types.id = t.target_type_id
 	LEFT JOIN hashtags
 	ON hashtags.id = t.target_id
 	LEFT JOIN location
 	ON location.id = t.target_id
 	LEFT JOIN users_accounts
-	ON users_accounts.user_id = t.target_id;
+	ON users_accounts.user_id = t.target_id
+	LEFT JOIN (SELECT target_type_id, target_id FROM subscriptions WHERE account_id = 121) AS t
+	ON subscriptions_target_types.id = t.target_type_id;
 	
 
 
