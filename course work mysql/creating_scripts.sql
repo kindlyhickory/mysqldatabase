@@ -190,3 +190,39 @@ CREATE TABLE `users_accounts` (
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- Создадим таблицу для связи хэштегов с подписками
+
+DROP TABLE IF EXISTS subscriptions_hashtags;
+CREATE TABLE subscriptions_hashtags (
+  subscription_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  hashtag_id INT UNSIGNED 
+ );
+
+#UPDATE subscriptions_hashtags SET
+#subscription_id = (SELECT id FROM subscriptions WHERE target_type_id =3),
+#hashtag_id = (SELECT target_id FROM subscriptions WHERE target_type_id =3);
+
+-- Процедура для переносы данных
+
+CREATE PROCEDURE copy_hashtags ()
+BEGIN
+  DECLARE id INT;
+  DECLARE is_end INT DEFAULT 0;
+  DECLARE target_id INT;
+
+  DECLARE curcat CURSOR FOR SELECT id,target_id FROM subscriptions WHERE target_type_id = 3;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET is_end = 1;
+
+  OPEN curcat;
+
+  cycle : LOOP
+	FETCH curcat INTO id, target_id;
+	IF is_end THEN LEAVE cycle;
+	END IF;
+	INSERT INTO subscriptions_hashtags (subscription_id, hashtag_id) VALUES(id, target_id);
+  END LOOP cycle;
+
+  CLOSE curcat;
+END//
+
+

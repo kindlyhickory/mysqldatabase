@@ -47,10 +47,11 @@ ALTER TABLE likes
  	ADD CONSTRAINT likes_target_types_id_fk
  		FOREIGN KEY(target_type_id) REFERENCES likes_target_types(id);
  	
-	
-ALTER TABLE users
-	ADD CONSTRAINT users_users_accounts_id_fk
-		FOREIGN KEY(id) REFERENCES users_accounts(user_id)
+ALTER TABLE users DROP FOREIGN KEY users_users_accounts_id_fk;
+ 	 	
+ALTER TABLE users_accounts
+	ADD CONSTRAINT users_accounts_users_id_fk
+		FOREIGN KEY(user_id) REFERENCES users(id)
 		ON DELETE CASCADE;	
 	
 	
@@ -87,7 +88,6 @@ ALTER TABLE stories_albums
 	 ADD CONSTRAINT stories_albums_account_id_users_account_user_id_fk
  		FOREIGN KEY(account_id) REFERENCES users_accounts(user_id); 	
 
-CREATE
 	
 
 -- удобен будет индекс на никнеймы

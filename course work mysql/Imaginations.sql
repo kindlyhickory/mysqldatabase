@@ -12,11 +12,15 @@ WITH CHECK OPTION;
 
 -- Так же можно создать представление сторис, что-то вроде ленты сторис
 
-CREATE VIEW stories (id, album, metadata) AS
-SELECT id, album_id,metadata
+
+CREATE OR REPLACE VIEW stories (id, album, metadata) AS
+SELECT media.id, album_id,metadata
 FROM media 
-WHERE media_type_id = 2
+JOIN media_types
+ON media.media_type_id = media_types.id AND media_types.name = 'storie'
 WITH CHECK OPTION;
 
 SELECT * FROM stories;
+
+SELECT * FROM subscriptions;
 
